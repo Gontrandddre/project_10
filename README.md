@@ -11,6 +11,7 @@
 * [Configuration de la gestion du serveur avec Supervisor](#configuration-Supervisor)
 * [Configuration contrôle continu Travis](#configuration-contrôle-continu-Travis)
 * [Configuration du monitoring sur DigitalOcean](#configuration-monitoring-DigitalOcean)
+* [Configuration du monitoring sur DigitalOcean avec NewRelic](#configuration-monitoring-DigitalOcean-NewRelic)
 * [Configuration du logging avec Sentry](#configuration-logging-Sentry)
 * [Configuration d'un nom de domaine](#configuration-nom-domaine)
 * [Automatisation de tâches avec Cron](#automatisation-Cron)
@@ -310,6 +311,13 @@ Nous retrouvons des variables comme le processur, la mémoire et d'autres élém
 
 Il suffit pour cela de rendre sur l'onglet *Monitoring* et de sélectionner la ou les variables à monitorer avec un seuil à dépasser pour l'envoi d'une alerte sur sa propre boîte mail afin d'être informé.
 
+## Configuration-monitoring-DigitalOcean-NewRelic
+
+Un outil de monitoring plus puissant peut être couplé au projet en production. Il se nomme NewRelic. C'est avec une commande à faire courir dans la console du serveur et quelques instructions à suivre que l'on peut bénéficer d'un monitoring plus exaustif et modulable que celui fournit par Digital Ocean.
+
+Ci-dessous, un apercu du dashboard de l'interface NewRelic pour ce projet en production:
+<img width="1311" alt="Capture d’écran 2021-04-20 à 18 50 55" src="https://user-images.githubusercontent.com/52699053/115434865-78cc6a80-a209-11eb-80d5-a1548ceca0e4.png">
+
 ## Configuration-logging-Sentry
 
 Cet outil quant à lui nous permet de visualiser ce qui se passe dans le code exactement contrairement au monitoring.
@@ -343,3 +351,48 @@ sentry_sdk.init(
 Dans notre cas, nous n'avons pas opté pour cette solution.
 
 ## Automatisation-Cron
+
+### Installation *django-crontab*
+
+```
+pipenv install django-crontab
+```
+
+*/Project_8/off_project/settings/init.py*
+Ajouter à la variable INSTALLED_APPS += 'django_crontab'
+
+### Création d'un fichier cron.py
+
+Ce fichier nous permet d'intégrer des méthodes qui seront appelés par différents cron.
+Dans notre cas nous créons une méthode qui appelle un script pour mettre à jour la base de données:
+
+*Project_8/off/cron.py*
+```
+from .scripts import update_database
+
+def update_database_cron():
+    update_database()
+```
+### Configuration du fichier production.py (côté serveur)
+
+*Project_8/off_project/settings/production.py*
+```
+CRONJOBS = [
+     ('0 0 * * MON', 'off.cron.update_database_cron', '> update-database-$(date +\%Y\%m\%d\%H\%M\%S).log'),
+     ('0 6 * * MON', 'django.core.management.call_command', ['dumpdata'], {'indent': 4}, "> dump-data-$(date +\%Y\%m\%d\%H\%M\%S).json"),
+]
+```
+Tous les lundis à minuit > mis à jour de la base de données avec stockage des logs.
+Tous les lundis à 6h00, dump de la base de données mis à jour sur un fichier json.
+
+Ajout scripts au sein de la machine:
+```
+python3 manage.py crontab add  
+```
+
+
+
+
+
+
+
