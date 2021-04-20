@@ -249,7 +249,7 @@ sudo supervisorctl status
 
 Puis redémarrer le processus:
 ```
-sudo supervisorctl restart pur_beurre-gunicorn
+sudo supervisorctl restart pur-beurre-gunicorn
 ```
 
 ## Configuration-contrôle-continu-Travis
