@@ -29,6 +29,7 @@ Retrouvez ci-dessous notre environnement de travail:
 - **Serveur HHTP :** Nginx
 - **Serveur HTTP/WSGI :** Gunicorn
 - **Contrôle continu :** Travis
+- **Monitoring :** Digital Ocean & NewRelic
 - **Logging :** Sentry
 - **DNS :** 
 - **Automatisation :** Cron
