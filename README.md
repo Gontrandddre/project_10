@@ -230,7 +230,7 @@ autorestart = true
 environment = DJANGO_SETTINGS_MODULE="off_project.settings.production"
 ```
 
-- COMMAND: Chemin de l'executable de Gunicorn (```pipenv --venv```)
+- COMMAND: Chemin de l'executable de Gunicorn (```whereis gunicorn```)
 - USER: Utilisateur de Digital Ocean
 - DIRECTORY: Chemin du projet
 - AUTORESTART: Oui, en cas d'arrêt
