@@ -101,7 +101,7 @@ sudo apt-get install libpq-dev postgresql postgresql-contrib
 ```
 sudo apt install pipenv
 ```
-
+(Erreur pour créer un environnement virtuel ? >> https://stackoverflow.com/questions/62820344/pipenv-fails-to-create-a-virtual-environment/62922485#62922485)
 
 ### Configuration d'une base de données
 
