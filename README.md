@@ -20,6 +20,9 @@
 
 L'objet de ce projet est de déployer sur un serveur de type IAAS un projet Django.
 Pour y parvenir, nous devons configurer tout un environnement en lien avec Python et son framawork Django tout en assurant, une intégration continu, un contrôle des logs/évènements pouvant nuire au bon fonctionnement de l'application et une mise à jour automatique de la base de données.
+
+Projet sujet au déploiement: https://github.com/Gontrandddre/Project_8
+
 Retrouvez ci-dessous notre environnement de travail:
 
 - **Setup :** MacOs
@@ -31,7 +34,6 @@ Retrouvez ci-dessous notre environnement de travail:
 - **Contrôle continu :** Travis
 - **Monitoring :** Digital Ocean & NewRelic
 - **Logging :** Sentry
-- **DNS :** 
 - **Automatisation :** Cron
 
 ## Configuration-projet
@@ -42,18 +44,18 @@ Retrouvez ci-dessous notre environnement de travail:
 *  init.py*
 *  production.py*
 
-Pour mieux appréhender les différents environnemnts du projet, nous avons créé un module settings incorporant un fichier de configuration par défault (pour le développment) vie la fichier __init__.py ainsi qu'un second fichier venant mettre à jour ce même fichier mais avec des valeurs pour la production via le fichier production.py.
+Pour mieux appréhender les différents environnemnts du projet, nous avons créé un module settings incorporant un fichier de configuration par défault (pour le développment) via le fichier __init__.py ainsi qu'un second fichier venant mettre à jour ce même fichier mais avec des valeurs pour la production via le fichier production.py.
 
 Pour de question de sécurité, le fichier *production.py* ne sera pas versionné.
 
-### Configuration de l'environnement de PRODUCTION
+### Configuration de l'environnement de PRODUCTION (côté serveur)
 
 *Project_8/off_project/settings/production.py*
 
 ```
-SECRET_KEY = 'clésecrète deproduction'
+SECRET_KEY = '<secret key>'
 DEBUG = False
-ALLOWED_HOSTS = ['104.236.198.112']
+ALLOWED_HOSTS = ['188.166.152.103']
 
 DATABASES = {
     'default': {
@@ -65,7 +67,7 @@ DATABASES = {
 }
 ```
 
-- SECRET_KEY: Génération d'une nouvelle clé pour la production
+- SECRET_KEY: Génération d'une nouvelle clé pour la production.
 - DEBUG: Doit être obligatoirement sur la valeur *false*.
 - ALLOWED_HOSTS: IP de notre serveur Digital Ocean.
 - DATABASES: Configuration pour le serveur Digital Ocean.
@@ -112,7 +114,7 @@ La configuration doit être en accord avec le fichier de configuration settings/
 
 Si première instace du projet:
 ```
-git clone <lien github>
+git clone <link project 8 github>
 ```
 
 Mise à jour du projet:
@@ -151,7 +153,7 @@ sudo apt-get install nginx
 server {
 
     listen 80;
-    server_name 104.236.198.112;
+    server_name 188.166.152.103;
     root /home/gda/Project_8/;
 
     location /static {
@@ -202,7 +204,7 @@ pipenv install gunicorn
 
 ### Tester gunicorn
 
-S'assurer que gunicorn est effectif:
+S'assurer que gunicorn est fonctionnel:
 ```
 gunicron off_project.wsgi:application
 ```
@@ -210,7 +212,7 @@ gunicron off_project.wsgi:application
 ## Configuration-Supervisor
 
 Supervisor nous permet de gérer les processus au sein du serveur Digital Ocean.
-Ici nous l'utilisons pour s'assurer que le processus gunicorn redémarrera en cas de besoin.
+Ici, nous l'utilisons pour s'assurer que le processus gunicorn redémarrera en cas de besoin.
 
 ### Installation
 
@@ -230,10 +232,10 @@ autorestart = true
 environment = DJANGO_SETTINGS_MODULE="off_project.settings.production"
 ```
 
-- COMMAND: Chemin de l'executable de Gunicorn (```whereis gunicorn```)
-- USER: Utilisateur de Digital Ocean
-- DIRECTORY: Chemin du projet
-- AUTORESTART: Oui, en cas d'arrêt
+- COMMAND: Chemin de l'executable de Gunicorn (```whereis gunicorn```).
+- USER: Utilisateur de Digital Ocean.
+- DIRECTORY: Chemin du projet.
+- AUTORESTART: Oui, en cas d'arrêt.
 - ENVIRONNMENT: Nous permet de renseigner le nom du fichier de paramêtrage pour la production à destination du serveur HTTP/WSGI Gunicorn.
 
 ### Mise à jour de supervisor
@@ -254,21 +256,21 @@ Puis redémarrer le processus:
 sudo supervisorctl restart pur-beurre-gunicorn
 ```
 
-## Configuration-contrôle-continu-Travis
+## Configuration-intégration-continue-Travis
 
 Travis est un service d'automatisation.
-Dans notre, cas il nous permet de générer un script nous permettant d'automatiser des tests quand nous mettons à jour une branche de notre repo distant github. 
-La sortie de ce script se solde par un status *success* ou *error* au sein de l'interface travis.com et de github.
-Cette interface nous renseign une multitude d'informations quand aux logs, à l'hoistorique des scripts pour chaque éléments voulus.
+Dans notre cas, il nous permet de générer un script afin d'automatiser des tests quand nous mettons à jour une branche de notre repo distant github. 
+La sortie de ce script se solde par un status *success* ou *error* au sein de l'interface Travis et de Github.
+Cette interface nous renseigne une multitude d'informations concernant les logs ou l'historique des scripts lancer par Travis.
 
 ### Configuration du compte travis
 
-Après avoir créer un compte, nous avons mis en relation notre repo github avec son interface.
-Cela permet à la fois de gérer le contrôle continu via l'interface de travis mais aussi de renvoyer des informations (telle que le status du script) sur le repo github.
+Après avoir créer un compte, nous avons mis en relation notre repo Github avec son interface.
+Cela permet à la fois de gérer l'intégration continue via l'interface de Travis mais aussi de renvoyer des informations (le status du script par exemple) sur le repo Github.
 
 ### Implementation du fichier .travis.yml au sein du projet
 
-Pour générer un script travis, il suffit de configurer un fichier .travis.yml au sein de notre projet.
+Pour générer un script travis, il suffit de configurer un fichier *.travis.yml* au sein de notre projet.
 
 *Project_8/.travis.yml*
 ```
@@ -292,7 +294,7 @@ script:
   - python3 manage.py test
 ```
 
-Un ensemble de paramêtres peuvent être configurer via ce fichier. Ici ce qui nous intéresse, c'est générer le script ```python3 manage.py test``` à chaque push de la branche *dev* sur le repo github.
+Un ensemble de paramètres peuvent être configurer via ce fichier. Ici ce qui nous intéresse, c'est générer le script ```python3 manage.py test``` à chaque push de la branche *dev* sur le repo Github.
 
 Après avoir effectué un ```git push origin dev```, nous obtenons sur github.com:
 <img width="630" alt="Capture d’écran 2021-04-20 à 11 29 59" src="https://user-images.githubusercontent.com/52699053/115373135-dd68d480-a1cb-11eb-875b-64c2580a96d1.png">
@@ -303,30 +305,28 @@ Possibilité de visualiser les logs en cas d'erreur ou de succès sur travis.com
 Possibilité de visualiser tout l'historique des logs générés par travis sur une même branche:
 <img width="950" alt="Capture d’écran 2021-04-20 à 11 33 10" src="https://user-images.githubusercontent.com/52699053/115373617-57995900-a1cc-11eb-82ad-834ab4f43e12.png">
 
-
-
 ## Configuration-monitoring-DigitalOcean
 
-Un ensemble de fonctionnalités permettent à l'utilisateur de visualiser par le biais de graphes, un ensemble de données issues du l'application en production.
-Nous retrouvons des variables comme le processur, la mémoire et d'autres éléments. Toutefois ce qui nous importe vraiment, c'est d'être informé des anomalies du serveur. Pour cela nous créons des seuils à ne par dépasser qui en cas de réalisation, nous informe en temps réel. 
+Un ensemble de fonctionnalités permet à l'utilisateur de visualiser par le biais de graphes, un ensemble de données issu de l'application en production.
+Nous retrouvons des variables comme le processur, la mémoire et d'autres éléments. Toutefois, ce qui nous importe vraiment, c'est d'être informé des anomalies du serveur. Pour cela nous créons des seuils à ne pas dépasser qui en cas de réalisation, nous informe en temps réel. 
 
-Il suffit pour cela de rendre sur l'onglet *Monitoring* et de sélectionner la ou les variables à monitorer avec un seuil à dépasser pour l'envoi d'une alerte sur sa propre boîte mail afin d'être informé.
+Il suffit pour cela de rendre sur l'onglet *Monitoring* et de sélectionner la ou les variables à monitorer avec un seuil à dépasser pour l'envoi d'une alerte sur notre propre boîte mail afin d'être informé.
 
 ## Configuration-monitoring-DigitalOcean-NewRelic
 
 Un outil de monitoring plus puissant peut être couplé au projet en production. Il se nomme NewRelic. C'est avec une commande à faire courir dans la console du serveur et quelques instructions à suivre que l'on peut bénéficer d'un monitoring plus exaustif et modulable que celui fournit par Digital Ocean.
 
-Ci-dessous, un apercu du dashboard de l'interface NewRelic pour ce projet en production:
+Ci-dessous, un apercu du dashboard de l'interface NewRelic pour notre projet en production:
 <img width="1311" alt="Capture d’écran 2021-04-20 à 18 50 55" src="https://user-images.githubusercontent.com/52699053/115434865-78cc6a80-a209-11eb-80d5-a1548ceca0e4.png">
 
 ## Configuration-logging-Sentry
 
 Cet outil quant à lui nous permet de visualiser ce qui se passe dans le code exactement contrairement au monitoring.
-En plus de nous fournir des logs, l'application SAAS nous renvoie tout l'environnement du llg comme le navigateur de l'utilisateur, l'url et ainsi de suite.
+En plus de nous fournir des logs, l'application SAAS nous renvoie tout l'environnement du log comme le navigateur de l'utilisateur, l'url et une plétore d'informations pertinentes pour le débbugage.
 
 ### Implémentation de Sentry au sein du projet
 
-Au sein de l'interface sentry, créer un nouveau projet avec la technologie utilisée.
+Au sein de l'interface Sentry, créer un nouveau projet avec la technologie utilisée.
 Sentry renverra la documentation pour implémenter ce service au sein de votre application web.
 Une fois implémenté, ce service sera opérationnel.
 
@@ -348,12 +348,12 @@ sentry_sdk.init(
 ```
 
 ## Configurattion-nom-domaine
-Ìl est possible de configurer un nom de domaine qui a été acheté au préalable au sein de Digital Ocean.
-Dans notre cas, nous n'avons pas opté pour cette solution.
+Ìl est possible de configurer un nom de domaine qui acheté au préalable au sein de Digital Ocean.
+Dans notre cas, nous n'avons pas opté pour cette option.
 
-## Automatisation-Cron
+### Automatisation-Cron
 
-### Installation *django-crontab*
+## Installation *django-crontab*
 
 ```
 pipenv install django-crontab
@@ -362,7 +362,7 @@ pipenv install django-crontab
 */Project_8/off_project/settings/init.py*
 Ajouter à la variable INSTALLED_APPS += 'django_crontab'
 
-### Création d'un fichier cron.py
+## Création d'un fichier cron.py
 
 Ce fichier nous permet d'intégrer des méthodes qui seront appelés par différents cron.
 Dans notre cas nous créons une méthode qui appelle un script pour mettre à jour la base de données:
