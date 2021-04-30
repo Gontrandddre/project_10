@@ -45,7 +45,7 @@ Retrouvez ci-dessous notre environnement de travail:
 *  init.py*
 *  production.py*
 
-Pour mieux appréhender les différents environnemnts du projet, nous avons créé un module settings incorporant un fichier de configuration par défault (pour le développment) via le fichier __init__.py ainsi qu'un second fichier venant mettre à jour ce même fichier mais avec des valeurs pour la production via le fichier production.py.
+Pour mieux appréhender les différents environnements du projet, nous avons créé un module settings incorporant un fichier de configuration par défault (pour le développment) via le fichier __init__.py ainsi qu'un second fichier venant mettre à jour ce même fichier mais avec des valeurs pour la production via le fichier production.py.
 
 Pour de question de sécurité, le fichier *production.py* ne sera pas versionné.
 
