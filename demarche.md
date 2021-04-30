@@ -1,4 +1,4 @@
-# Project_10 : Démarche
+# Démarche
 --------------------
 
 # Table des matières
@@ -22,6 +22,7 @@ L'objet de ce projet est de déployer sur un serveur de type IAAS un projet Djan
 Pour y parvenir, nous devons configurer tout un environnement en lien avec Python et son framawork Django tout en assurant, une intégration continu, un contrôle des logs/évènements pouvant nuire au bon fonctionnement de l'application et une mise à jour automatique de la base de données.
 
 Projet sujet au déploiement: https://github.com/Gontrandddre/Project_8
+Adresse IP: 188.166.152.103
 
 Retrouvez ci-dessous notre environnement de travail:
 
